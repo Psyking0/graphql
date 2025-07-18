@@ -50,7 +50,7 @@ export function renderProfile() {
             </div>
             <div class="chart-container">
               <h3>Audit Results</h3>
-              <svg id="pie-chart" width="200" height="250" class="chart-svg"></svg>
+              <svg id="pie-chart" width="200" height="300" class="chart-svg"></svg>
             </div>
           </div>
         </section>
