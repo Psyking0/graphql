@@ -82,7 +82,7 @@ export class XPChart {
 
       const barHeight = yScale(amount);
       const x = left + i * (barWidth + barSpacing);
-      const y = svgHeight - bottom - barHeight;
+      const y = svgHeight - bottom - barHeight; // Y-position of the top of the bar
 
       // Bar
       const bar = this._createSvgElement("rect", {
@@ -99,24 +99,33 @@ export class XPChart {
 
       this.svg.appendChild(bar);
 
-      // --- CHANGES FOR ROTATED X-AXIS LABELS ---
-      const labelX = x + barWidth / 2;
-      const labelY = svgHeight - bottom + 10; // Slightly lower than before for pivot point
+      // --- ADDED: XP Value Label on top of the bar ---
+      const xpLabel = this._createSvgElement("text", {
+        x: x + barWidth / 2, 
+        y: y - 5, 
+        "text-anchor": "middle",
+        "font-size": "9px", 
+        fill: "#374151" 
+      });
 
-      const label = this._createSvgElement("text", {
-        x: labelX,
-        y: labelY,
-        "text-anchor": "end", // Aligns the end of the text to the pivot point
+      xpLabel.textContent = `${(amount / 1000).toFixed(1)}k`; 
+      this.svg.appendChild(xpLabel);
+
+      // --- X-Axis Label (for date) ---
+      const dateLabelX = x + barWidth / 2;
+      const dateLabelY = svgHeight - bottom + 10; 
+
+      const dateLabel = this._createSvgElement("text", {
+        x: dateLabelX,
+        y: dateLabelY,
+        "text-anchor": "end",
         "font-size": "10",
         fill: "#6b7280"
       });
-      label.textContent = dayMonthYearLabel;
+      dateLabel.textContent = dayMonthYearLabel;
 
-      // Add rotation transform: rotate(-angle centerX centerY)
-      label.setAttribute("transform", `rotate(-45 ${labelX} ${labelY})`);
-      // ---------------------------------------------
-
-      this.svg.appendChild(label);
+      dateLabel.setAttribute("transform", `rotate(-45 ${dateLabelX} ${dateLabelY})`);
+      this.svg.appendChild(dateLabel);
     });
 
     // === Y-axis line ===
@@ -124,7 +133,7 @@ export class XPChart {
       x1: left,
       y1: top,
       x2: left,
-      y2: svgHeight - bottom, // Use adjusted margin
+      y2: svgHeight - bottom,
       stroke: "#111827"
     });
     this.svg.appendChild(yAxis);
