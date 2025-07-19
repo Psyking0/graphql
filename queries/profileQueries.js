@@ -88,7 +88,10 @@ export const PROFILE_QUERIES = {
   // XP transactions for charts
   xpTransactions: `
     {
-      transaction(where: {type: {_eq: "xp"}}, order_by: {createdAt: asc}) {
+      transaction(
+          where: {type: {_eq: "xp"}, event: {object: {name: {_eq: "Module"}}}}
+          order_by: {createdAt: desc}
+        ) {
         amount 
         createdAt
         path

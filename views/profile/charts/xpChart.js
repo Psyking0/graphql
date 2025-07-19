@@ -2,7 +2,8 @@ export class XPChart {
   constructor(containerId = 'xp-chart') {
     this.containerId = containerId;
     this.svg = document.getElementById(this.containerId);
-
+    this.Peek = 0
+    this.AMOUNT = 0
     if (!this.svg) {
       console.error(`SVG container with id '${this.containerId}' not found`);
     }
@@ -42,8 +43,8 @@ export class XPChart {
     this.svg.setAttribute("height", svgHeight);
 
     // === Scale Y based on max XP ===
-    const maxXP = Math.max(...xpData.map(tx => tx.amount));
-    const yScale = xp => (maxXP > 0 ? (chartHeight * xp) / maxXP : 0);
+    const maxXP = xpData.reduce((sum, tx) => sum + tx.amount, 0);
+    const yScale = (xp) => (maxXP > 0 ? (chartHeight * xp) / maxXP : 0);
 
     // === Y-axis with XP ticks ===
     const yTicks = 5;
@@ -77,13 +78,13 @@ export class XPChart {
     xpData.forEach((tx, i) => {
       const { amount, createdAt } = tx;
       const date = new Date(createdAt);
-
+      this.AMOUNT += amount; // Accumulate total XP for Peek
       const dayMonthYearLabel = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' });
 
-      const barHeight = yScale(amount);
+     this.Peek += yScale(amount);
+      const barHeight = this.Peek; // Use the scaled height directly
       const x = left + i * (barWidth + barSpacing);
       const y = svgHeight - bottom - barHeight; // Y-position of the top of the bar
-
       // Bar
       const bar = this._createSvgElement("rect", {
         x: x,
@@ -108,7 +109,7 @@ export class XPChart {
         fill: "#374151" 
       });
 
-      xpLabel.textContent = `${(amount / 1000).toFixed(1)}k`; 
+      xpLabel.textContent = `${(this.AMOUNT / 1000).toFixed(1)}k`; 
       this.svg.appendChild(xpLabel);
 
       // --- X-Axis Label (for date) ---
